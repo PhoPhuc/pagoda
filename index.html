@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khám Phá Tâm Linh Huyện Tân Hồng</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Be Vietnam Pro -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gradient-background-start: rgb(240, 242, 245);
+            --gradient-background-end: rgb(224, 231, 255);
+            --first-color: 18, 113, 255;
+            --second-color: 221, 74, 255;
+            --third-color: 100, 220, 255;
+            --fourth-color: 200, 50, 50;
+            --fifth-color: 180, 180, 50;
+            --pointer-color: 140, 100, 255;
+            --size: 60vmax;
+            --blending-value: hard-light;
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #f0f2f5; 
+            overflow-x: hidden;
+        }
+
+        .fade-in { animation: fadeIn 0.6s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.1), 0 5px 10px -3px rgba(0, 0, 0, 0.08);
+        }
+
+        .background-gradient-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(40deg, var(--gradient-background-start), var(--gradient-background-end));
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .gradients-container {
+            width: 100%;
+            height: 100%;
+            filter: url(#blurMe) blur(40px);
+        }
+
+        .gradient-blob {
+            position: absolute;
+            background-repeat: no-repeat;
+            mix-blend-mode: var(--blending-value);
+            width: var(--size);
+            height: var(--size);
+            top: calc(50% - var(--size) / 2);
+            left: calc(50% - var(--size) / 2);
+            transform-origin: center center;
+            opacity: 1;
+        }
+
+        .blob-1 { background: radial-gradient(circle at center, rgba(var(--first-color), 0.8) 0, rgba(var(--first-color), 0) 50%); animation: moveInCircle 20s infinite alternate; }
+        .blob-2 { background: radial-gradient(circle at center, rgba(var(--second-color), 0.8) 0, rgba(var(--second-color), 0) 50%); transform-origin: calc(50% - 400px); animation: moveInCircle 22s infinite alternate; }
+        .blob-3 { background: radial-gradient(circle at center, rgba(var(--third-color), 0.8) 0, rgba(var(--third-color), 0) 50%); transform-origin: calc(50% + 400px); animation: moveInCircle 24s infinite alternate; }
+        .blob-4 { background: radial-gradient(circle at center, rgba(var(--fourth-color), 0.7) 0, rgba(var(--fourth-color), 0) 50%); transform-origin: calc(50% - 200px); animation: moveInCircle 26s infinite alternate; }
+        .blob-5 { background: radial-gradient(circle at center, rgba(var(--fifth-color), 0.7) 0, rgba(var(--fifth-color), 0) 50%); transform-origin: calc(50% - 800px) calc(50% + 200px); animation: moveInCircle 28s infinite alternate; }
+        
+        .interactive-pointer {
+            position: absolute;
+            background: radial-gradient(circle at center, rgba(var(--pointer-color), 0.8) 0, rgba(var(--pointer-color), 0) 50%);
+            mix-blend-mode: var(--blending-value);
+            width: 100%; height: 100%; top: -50%; left: -50%; opacity: 0.7;
+        }
+
+        @keyframes moveInCircle {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* --- START: Lightbox Styles --- */
+        #lightbox-content-wrapper {
+            transition: transform 0.3s ease-in-out;
+            will-change: transform;
+        }
+        #lightbox-content-wrapper.panning {
+            cursor: grabbing;
+        }
+        #lightbox-content-wrapper img {
+            cursor: grab;
+        }
+        /* --- END: Lightbox Styles --- */
+
+    </style>
+</head>
+<body class="text-gray-800">
+    
+    <div class="background-gradient-animation">
+        <svg class="hidden"><defs><filter id="blurMe"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" /><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo" /><feBlend in="SourceGraphic" in2="goo" /></filter></defs></svg>
+        <div class="gradients-container">
+            <div class="gradient-blob blob-1"></div><div class="gradient-blob blob-2"></div><div class="gradient-blob blob-3"></div><div class="gradient-blob blob-4"></div><div class="gradient-blob blob-5"></div>
+            <div class="interactive-pointer"></div>
+        </div>
+    </div>
+
+    <div class="container mx-auto p-4 md:p-8 max-w-6xl min-h-screen relative z-10 flex flex-col">
+        <div class="flex-grow">
+            <header id="main-header" class="text-center mb-8 sm:mb-12 fade-in">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">Khám Phá Tâm Linh</h1>
+                <p class="text-base sm:text-lg text-gray-600 mt-2 sm:mt-3">Những địa điểm thờ cúng nổi bật tại huyện Tân Hồng, Đồng Tháp</p>
+            </header>
+
+            <main id="locations-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 fade-in"></main>
+
+            <section id="location-detail" class="hidden fade-in">
+                <div class="mb-6">
+                    <button id="back-button" class="flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors bg-white/50 rounded-full px-4 py-2 shadow-sm hover:shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                        Khám phá địa điểm khác
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-8">
+                    <div class="md:col-span-3">
+                         <img id="detail-cover-image" src="" alt="Ảnh bìa địa điểm" class="w-full h-auto object-cover rounded-3xl shadow-2xl">
+                    </div>
+                    <div class="md:col-span-2 glass-card rounded-3xl p-5 sm:p-6 md:p-8">
+                        <h2 id="detail-name" class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4"></h2>
+                        <div class="flex items-start text-gray-700 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 mt-1 flex-shrink-0 text-blue-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg>
+                            <p id="detail-address"></p>
+                        </div>
+                         <div class="mb-6">
+                            <a id="detail-map-link" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">Xem trên Google Maps<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></a>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-3 border-b border-white/30 pb-2">Thông tin chi tiết</h3>
+                        <p id="detail-info" class="text-gray-700 leading-relaxed"></p>
+                        <div id="detail-learn-more-container" class="mt-6 hidden">
+                            <a id="detail-learn-more-link" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">Tìm hiểu thêm<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 sm:mt-10">
+                    <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 text-center md:text-left">Thư viện</h3>
+                    <div id="detail-gallery" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+                </div>
+            </section>
+        </div>
+
+        <footer class="text-center p-4 sm:p-6 relative z-10 mt-12">
+            <div class="mb-6">
+                <a href="./schedule.html" class="inline-block bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-blue-700 transition-transform transform hover:scale-105">Tạo lịch trình</a>
+            </div>
+            <div class="text-gray-600">
+                <p class="mb-2 text-sm">Thực hiện bởi Nhóm 2</p>
+                <button id="see-more-button" class="text-blue-500 hover:underline text-sm font-medium">Xem thành viên</button>
+                <div id="names-list" class="hidden max-w-2xl mx-auto mt-4 text-sm text-gray-500 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-4 gap-y-2">
+                    <span>Ngọc Thư</span><span>Huyền Trâm</span><span>Thu Hồng</span><span>Kim Tuyến</span><span>Anh Kiệt</span><span>Quốc Đạt</span><span>Văn Tài</span><span>Châu Tuấn</span><span>Trọng Phúc</span><span>Thanh Phúc</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 fade-in">
+        <button id="lightbox-close" class="absolute top-4 right-5 text-white text-5xl font-light hover:text-gray-300 transition-colors z-50">&times;</button>
+        <button id="lightbox-prev" class="absolute left-4 top-1/2 -translate-y-1/2 text-white text-4xl p-2 rounded-full bg-black bg-opacity-20 hover:bg-opacity-40 transition-opacity">&#10094;</button>
+        <button id="lightbox-next" class="absolute right-4 top-1/2 -translate-y-1/2 text-white text-4xl p-2 rounded-full bg-black bg-opacity-20 hover:bg-opacity-40 transition-opacity">&#10095;</button>
+        <div id="lightbox-content-wrapper" class="w-full h-full flex items-center justify-center overflow-hidden">
+             <!-- Image or Video will be injected here -->
+        </div>
+    </div>
+
+
+    <script>
+        const locationsData = [
+            { id: 0, name: "Chùa Đôn Hậu", address: "Bình Phú, Tân Hồng, Đồng Tháp", mapLink: "https://maps.app.goo.gl/ep9kpdHd6fHX17Hg8", info: "Chùa Đôn Hậu, một ngôi tự viện có lịch sử lâu đời, là điểm tựa tâm linh và là trung tâm của các hoạt động an sinh xã hội ý nghĩa. Vượt qua giai đoạn khó khăn sau chiến tranh, chùa đã được phục hưng và trở thành nơi tu học trang nghiêm, đồng thời luôn đi đầu trong các công tác từ thiện, giúp đỡ cộng đồng và góp phần giữ gìn an ninh trật tự tại địa phương.", learnMoreLink: "#" },
+            { id: 1, name: "Chùa Phước Thiện", address: "Công Tạo, Bình Phú, Tân Hồng, Đồng Tháp", mapLink: "https://maps.app.goo.gl/UzNkYtFcKctNPbsr9", info: "là một di tích lịch sử – văn hóa gắn liền với cuộc đời nhà sư Trần Liên – một nhân sĩ xuất gia có tâm thế lớn, người từng xây chùa, khuyên răn Phật tử làm điều thiện, giúp dân đào kênh chống giặc, xây đắp cản giữ vùng biên giới bị xâm nhập.", learnMoreLink: "#" },
+            { id: 2, name: "Chùa Đông An", address: "Tân Hộ Cơ, Tân Hồng, Đồng Tháp", mapLink: "https://maps.app.goo.gl/yGdtXaydSa7roncr8", info: "Chùa Đông An là một ngôi chùa cổ kính, là nơi sinh hoạt tín ngưỡng quan trọng của người dân địa phương, mang đến không gian thanh tịnh để chiêm bái và cầu nguyện.", learnMoreLink: "#" },
+            { id: 3, name: "Miếu Bà Chúa Xứ Nguyên Dung", address: "Thông Bình, Tân Hồng, Đồng Tháp", mapLink: "https://maps.app.goo.gl/qTEpzoxPtQy3PJVd8", info: "Miếu Bà Chúa Xứ Nguyên Dung là một địa điểm tâm linh linh thiêng, được người dân trong và ngoài huyện tin tưởng tìm đến cầu an, cầu tài lộc. Miếu có lịch sử lâu đời, gắn liền với nhiều câu chuyện huyền bí về sự phù hộ của Bà Chúa Xứ.", learnMoreLink: "#" },
+            { id: 4, name: "Chùa Hiếu Đức", address: "Tân Hộ Cơ, Tân Hồng, Đồng Tháp", mapLink: "https://maps.app.goo.gl/Jxr6X5NZhNssBVuK6", info: "Đây là ngôi chùa gắn bó lâu đời với đời sống tâm linh của người dân địa phương. Chùa có kiến trúc mang đậm nét truyền thống Nam Bộ, không gian thanh tịnh, yên bình giữa vùng quê biên giới. Nơi đây là trung tâm sinh hoạt của Phật tử, thường xuyên tổ chức các lễ lớn như Vu Lan, Phật Đản, góp phần giữ gìn giá trị văn hóa – đạo đức trong cộng đồng. Hiện nay, chùa do Đại đức Thích Chơn Trí trụ trì.", learnMoreLink: "#" }
+        ];
+
+        // DOM Elements
+        const mainHeader = document.getElementById('main-header');
+        const locationsGrid = document.getElementById('locations-grid');
+        const locationDetail = document.getElementById('location-detail');
+        const backButton = document.getElementById('back-button');
+        const detailCoverImage = document.getElementById('detail-cover-image');
+        const detailName = document.getElementById('detail-name');
+        const detailAddress = document.getElementById('detail-address');
+        const detailMapLink = document.getElementById('detail-map-link');
+        const detailInfo = document.getElementById('detail-info');
+        const detailGallery = document.getElementById('detail-gallery');
+        
+        // Lightbox DOM Elements
+        const lightbox = document.getElementById('lightbox');
+        const lightboxContentWrapper = document.getElementById('lightbox-content-wrapper');
+        const lightboxClose = document.getElementById('lightbox-close');
+        const lightboxPrev = document.getElementById('lightbox-prev');
+        const lightboxNext = document.getElementById('lightbox-next');
+
+        // Lightbox State
+        let galleryItemsForLightbox = [];
+        let currentLightboxIndex = 0;
+
+        function showLocationDetails(location) {
+            detailName.textContent = location.name;
+            detailAddress.textContent = location.address;
+            detailMapLink.href = location.mapLink;
+            detailInfo.textContent = location.info;
+            
+            detailCoverImage.src = `gallery/${location.id}/${location.id}-1.jpg`;
+            detailCoverImage.alt = `Ảnh bìa của ${location.name}`;
+            detailCoverImage.onerror = () => { detailCoverImage.style.display = 'none'; };
+            detailCoverImage.onload = () => { detailCoverImage.style.display = 'block'; };
+
+            const learnMoreContainer = document.getElementById('detail-learn-more-container');
+            const learnMoreLink = document.getElementById('detail-learn-more-link');
+            if (location.learnMoreLink && location.learnMoreLink !== '#') {
+                learnMoreLink.href = location.learnMoreLink;
+                learnMoreContainer.classList.remove('hidden');
+            } else {
+                learnMoreContainer.classList.add('hidden');
+            }
+
+            detailGallery.innerHTML = '';
+            galleryItemsForLightbox = [];
+            
+            const maxGalleryItems = 30; // Increased limit to load more files
+            for (let i = 2; i < maxGalleryItems; i++) {
+                addGalleryItem(`gallery/${location.id}/${location.id}-${i}.jpg`, 'image');
+                addGalleryItem(`gallery/${location.id}/${location.id}-${i}z.mp4`, 'video');
+            }
+
+            mainHeader.classList.add('hidden');
+            locationsGrid.classList.add('hidden');
+            locationDetail.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+        
+        function addGalleryItem(src, type) {
+            // DEBUG: Log the path being attempted to load.
+            // console.log(`[DEBUG] Trying to load: ${src}`);
+
+            const itemContainer = document.createElement('div');
+            itemContainer.className = 'relative overflow-hidden rounded-2xl shadow-lg cursor-pointer group aspect-video';
+            
+            let mediaElement;
+            let iconHTML = '';
+
+            if (type === 'image') {
+                mediaElement = document.createElement('img');
+                iconHTML = `<div class="absolute top-2 right-2 bg-black bg-opacity-50 rounded-full p-1.5 text-white pointer-events-none"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></div>`;
+            } else { // video
+                mediaElement = document.createElement('video');
+                mediaElement.muted = true;
+                mediaElement.loop = true;
+                mediaElement.playsInline = true;
+                iconHTML = `<div class="absolute top-2 right-2 bg-black bg-opacity-50 rounded-full p-1.5 text-white pointer-events-none"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg></div>`;
+            }
+
+            mediaElement.src = src;
+            mediaElement.className = 'w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300';
+            
+            itemContainer.appendChild(mediaElement);
+
+            const setupItem = () => {
+                 const iconWrapper = document.createElement('div');
+                 iconWrapper.innerHTML = iconHTML.trim();
+                 if(iconWrapper.firstChild) itemContainer.appendChild(iconWrapper.firstChild);
+
+                 if (type === 'video') {
+                     itemContainer.onmouseenter = () => mediaElement.play();
+                     itemContainer.onmouseleave = () => mediaElement.pause();
+                 }
+                 
+                 galleryItemsForLightbox.push({ src, type });
+
+                 itemContainer.addEventListener('click', () => {
+                    // Sort the array by file name numbering just before opening the lightbox
+                    galleryItemsForLightbox.sort((a, b) => {
+                        const getSortKey = (srcStr) => {
+                            const match = srcStr.match(/-(\d+)(z)?\./);
+                            if (!match) return 999;
+                            const num = parseInt(match[1], 10);
+                            const isVideo = !!match[2]; // Check if 'z' exists
+                            return num * 10 + (isVideo ? 1 : 0); // Images before videos for same index
+                        };
+                        return getSortKey(a.src) - getSortKey(b.src);
+                    });
+                    
+                    const clickedIndex = galleryItemsForLightbox.findIndex(item => item.src === src);
+                    if (clickedIndex > -1) {
+                        openLightbox(clickedIndex);
+                    }
+                 });
+            };
+
+            mediaElement.onerror = () => itemContainer.remove();
+            if (type === 'image') {
+                mediaElement.onload = setupItem;
+            } else { // video
+                mediaElement.onloadeddata = setupItem;
+            }
+            
+            detailGallery.appendChild(itemContainer);
+        }
+
+        function showLocationsGrid() {
+            locationDetail.classList.add('hidden');
+            mainHeader.classList.remove('hidden');
+            locationsGrid.classList.remove('hidden');
+        }
+
+        function renderLocationCards() {
+            locationsGrid.innerHTML = '';
+            locationsData.forEach(location => {
+                const card = document.createElement('div');
+                card.className = 'glass-card cursor-pointer rounded-3xl overflow-hidden group';
+                card.dataset.id = location.id;
+                const iconUrl = `gallery/${location.id}/${location.id}-0.jpg`;
+                card.innerHTML = `
+                    <div class="overflow-hidden"><img class="w-full h-40 sm:h-48 object-cover transform group-hover:scale-105 transition-transform duration-300" src="${iconUrl}" alt="Biểu tượng ${location.name}" onerror="this.parentElement.parentElement.style.display='none'"></div>
+                    <div class="p-5"><h3 class="text-lg sm:text-xl font-semibold text-gray-800">${location.name}</h3></div>
+                `;
+                card.addEventListener('click', () => {
+                    const selectedLocation = locationsData.find(loc => loc.id === parseInt(card.dataset.id));
+                    if (selectedLocation) showLocationDetails(selectedLocation);
+                });
+                locationsGrid.appendChild(card);
+            });
+        }
+        
+        // --- Lightbox Functions ---
+        function openLightbox(index) {
+            currentLightboxIndex = index;
+            displayLightboxItem();
+            lightbox.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.add('hidden');
+            lightboxContentWrapper.innerHTML = ''; // Clear content to stop videos
+            document.body.style.overflow = '';
+        }
+
+        function showNextItem() {
+            currentLightboxIndex = (currentLightboxIndex + 1) % galleryItemsForLightbox.length;
+            displayLightboxItem();
+        }
+
+        function showPrevItem() {
+            currentLightboxIndex = (currentLightboxIndex - 1 + galleryItemsForLightbox.length) % galleryItemsForLightbox.length;
+            displayLightboxItem();
+        }
+
+        function displayLightboxItem() {
+            const item = galleryItemsForLightbox[currentLightboxIndex];
+            lightboxContentWrapper.innerHTML = ''; // Clear previous
+            
+            if (item.type === 'image') {
+                const img = document.createElement('img');
+                img.src = item.src;
+                img.className = 'max-w-[90vw] max-h-[90vh] object-contain';
+                lightboxContentWrapper.appendChild(img);
+                setupZoomAndPan(lightboxContentWrapper);
+            } else { // video
+                const video = document.createElement('video');
+                video.src = item.src;
+                video.className = 'max-w-[90vw] max-h-[90vh]';
+                video.controls = true;
+                video.autoplay = true;
+                lightboxContentWrapper.appendChild(video);
+            }
+        }
+        
+        function setupZoomAndPan(wrapper) {
+            let scale = 1, isPanning = false,
+                start = { x: 0, y: 0 },
+                translate = { x: 0, y: 0 };
+                
+            wrapper.style.transform = ''; // Reset transform
+
+            function applyTransform() {
+                wrapper.style.transform = `translate(${translate.x}px, ${translate.y}px) scale(${scale})`;
+            }
+
+            wrapper.onwheel = (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                scale = Math.min(Math.max(1, scale + delta), 5);
+                if (scale === 1) translate = { x: 0, y: 0 };
+                applyTransform();
+            }
+
+            wrapper.onmousedown = (e) => {
+                if (scale === 1) return;
+                e.preventDefault();
+                isPanning = true;
+                start = { x: e.clientX - translate.x, y: e.clientY - translate.y };
+                wrapper.classList.add('panning');
+            }
+
+            window.onmousemove = (e) => {
+                if (!isPanning) return;
+                e.preventDefault();
+                translate.x = e.clientX - start.x;
+                translate.y = e.clientY - start.y;
+                applyTransform();
+            }
+            
+            window.onmouseup = () => {
+                isPanning = false;
+                wrapper.classList.remove('panning');
+            }
+        }
+
+
+        // --- Event Listeners ---
+        backButton.addEventListener('click', showLocationsGrid);
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightboxNext.addEventListener('click', showNextItem);
+        lightboxPrev.addEventListener('click', showPrevItem);
+
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.classList.contains('hidden')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowRight') showNextItem();
+            if (e.key === 'ArrowLeft') showPrevItem();
+        });
+
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderLocationCards();
+
+            const interactivePointer = document.querySelector('.interactive-pointer');
+            if(interactivePointer) {
+                let curX = 0, curY = 0, tgX = 0, tgY = 0;
+                document.addEventListener('mousemove', (event) => { tgX = event.clientX; tgY = event.clientY; });
+                function movePointer() {
+                    curX += (tgX - curX) / 20;
+                    curY += (tgY - curY) / 20;
+                    interactivePointer.style.transform = `translate(${Math.round(curX)}px, ${Math.round(curY)}px)`;
+                    requestAnimationFrame(movePointer);
+                }
+                movePointer();
+            }
+            
+            const seeMoreButton = document.getElementById('see-more-button');
+            const namesList = document.getElementById('names-list');
+            if (seeMoreButton && namesList) {
+                seeMoreButton.addEventListener('click', () => namesList.classList.toggle('hidden'));
+            }
+        });
+
+    </script>
+</body>
+</html>
+
