@@ -110,6 +110,17 @@
         }
         /* --- END: Lightbox Styles --- */
 
+        /* --- START: Lazy Loading Styles --- */
+        .lazy-media {
+            background-color: #e2e8f0; /* A light gray placeholder */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .lazy-media.loaded {
+            opacity: 1;
+        }
+        /* --- END: Lazy Loading Styles --- */
+
     </style>
 </head>
 <body class="text-gray-800">
@@ -140,7 +151,7 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-8">
                     <div class="md:col-span-3">
-                         <img id="detail-cover-image" src="" alt="Ảnh bìa địa điểm" class="w-full h-auto object-cover rounded-3xl shadow-2xl">
+                         <img id="detail-cover-image" src="" alt="Ảnh bìa địa điểm" class="w-full h-auto object-cover rounded-3xl shadow-2xl lazy-media">
                     </div>
                     <div class="md:col-span-2 glass-card rounded-3xl p-5 sm:p-6 md:p-8">
                         <h2 id="detail-name" class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4"></h2>
@@ -222,16 +233,39 @@
         let galleryItemsForLightbox = [];
         let currentLightboxIndex = 0;
 
+        // Intersection Observer for Lazy Loading
+        const lazyLoadObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const mediaElement = entry.target;
+                    const src = mediaElement.dataset.src;
+                    if (src) {
+                        mediaElement.src = src;
+                        const eventType = mediaElement.tagName === 'IMG' ? 'onload' : 'onloadeddata';
+                        mediaElement[eventType] = () => {
+                            mediaElement.classList.add('loaded');
+                        };
+                    }
+                    observer.unobserve(mediaElement);
+                }
+            });
+        }, { rootMargin: "0px 0px 200px 0px" }); // Start loading when 200px away from viewport
+
         function showLocationDetails(location) {
             detailName.textContent = location.name;
             detailAddress.textContent = location.address;
             detailMapLink.href = location.mapLink;
             detailInfo.textContent = location.info;
             
-            detailCoverImage.src = `gallery/${location.id}/${location.id}-1.jpg`;
+            // Eagerly load the cover image as it's the first thing seen
+            const coverSrc = `gallery/${location.id}/${location.id}-1.jpg`;
+            detailCoverImage.src = coverSrc;
             detailCoverImage.alt = `Ảnh bìa của ${location.name}`;
             detailCoverImage.onerror = () => { detailCoverImage.style.display = 'none'; };
-            detailCoverImage.onload = () => { detailCoverImage.style.display = 'block'; };
+            detailCoverImage.onload = () => { 
+                detailCoverImage.style.display = 'block'; 
+                detailCoverImage.classList.add('loaded');
+            };
 
             const learnMoreContainer = document.getElementById('detail-learn-more-container');
             const learnMoreLink = document.getElementById('detail-learn-more-link');
@@ -245,11 +279,15 @@
             detailGallery.innerHTML = '';
             galleryItemsForLightbox = [];
             
-            const maxGalleryItems = 30; // Increased limit to load more files
+            const maxGalleryItems = 30;
+            const itemsToLoad = [];
+
             for (let i = 2; i < maxGalleryItems; i++) {
-                addGalleryItem(`gallery/${location.id}/${location.id}-${i}.jpg`, 'image');
-                addGalleryItem(`gallery/${location.id}/${location.id}-${i}z.mp4`, 'video');
+                itemsToLoad.push({ src: `gallery/${location.id}/${location.id}-${i}.jpg`, type: 'image' });
+                itemsToLoad.push({ src: `gallery/${location.id}/${location.id}-${i}z.mp4`, type: 'video' });
             }
+            
+            itemsToLoad.forEach(item => addGalleryItem(item.src, item.type));
 
             mainHeader.classList.add('hidden');
             locationsGrid.classList.add('hidden');
@@ -258,9 +296,6 @@
         }
         
         function addGalleryItem(src, type) {
-            // DEBUG: Log the path being attempted to load.
-            // console.log(`[DEBUG] Trying to load: ${src}`);
-
             const itemContainer = document.createElement('div');
             itemContainer.className = 'relative overflow-hidden rounded-2xl shadow-lg cursor-pointer group aspect-video';
             
@@ -278,8 +313,9 @@
                 iconHTML = `<div class="absolute top-2 right-2 bg-black bg-opacity-50 rounded-full p-1.5 text-white pointer-events-none"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg></div>`;
             }
 
-            mediaElement.src = src;
-            mediaElement.className = 'w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300';
+            mediaElement.dataset.src = src; // Store real source
+            mediaElement.className = 'w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300 lazy-media';
+            lazyLoadObserver.observe(mediaElement); // Observe this element
             
             itemContainer.appendChild(mediaElement);
 
@@ -296,14 +332,13 @@
                  galleryItemsForLightbox.push({ src, type });
 
                  itemContainer.addEventListener('click', () => {
-                    // Sort the array by file name numbering just before opening the lightbox
                     galleryItemsForLightbox.sort((a, b) => {
                         const getSortKey = (srcStr) => {
                             const match = srcStr.match(/-(\d+)(z)?\./);
                             if (!match) return 999;
                             const num = parseInt(match[1], 10);
-                            const isVideo = !!match[2]; // Check if 'z' exists
-                            return num * 10 + (isVideo ? 1 : 0); // Images before videos for same index
+                            const isVideo = !!match[2];
+                            return num * 10 + (isVideo ? 1 : 0);
                         };
                         return getSortKey(a.src) - getSortKey(b.src);
                     });
@@ -314,15 +349,15 @@
                     }
                  });
             };
-
-            mediaElement.onerror = () => itemContainer.remove();
-            if (type === 'image') {
-                mediaElement.onload = setupItem;
-            } else { // video
-                mediaElement.onloadeddata = setupItem;
-            }
             
-            detailGallery.appendChild(itemContainer);
+            // Check if file exists by trying to load it; only add if successful
+            const tempMedia = type === 'image' ? new Image() : document.createElement('video');
+            tempMedia.src = src;
+            const successEvent = type === 'image' ? 'onload' : 'onloadeddata';
+            tempMedia[successEvent] = () => {
+                setupItem();
+                detailGallery.appendChild(itemContainer);
+            };
         }
 
         function showLocationsGrid() {
@@ -338,10 +373,24 @@
                 card.className = 'glass-card cursor-pointer rounded-3xl overflow-hidden group';
                 card.dataset.id = location.id;
                 const iconUrl = `gallery/${location.id}/${location.id}-0.jpg`;
-                card.innerHTML = `
-                    <div class="overflow-hidden"><img class="w-full h-40 sm:h-48 object-cover transform group-hover:scale-105 transition-transform duration-300" src="${iconUrl}" alt="Biểu tượng ${location.name}" onerror="this.parentElement.parentElement.style.display='none'"></div>
-                    <div class="p-5"><h3 class="text-lg sm:text-xl font-semibold text-gray-800">${location.name}</h3></div>
-                `;
+                
+                const img = document.createElement('img');
+                img.dataset.src = iconUrl;
+                img.className = 'w-full h-40 sm:h-48 object-cover transform group-hover:scale-105 transition-transform duration-300 lazy-media';
+                img.alt = `Biểu tượng ${location.name}`;
+                lazyLoadObserver.observe(img);
+
+                const imgContainer = document.createElement('div');
+                imgContainer.className = 'overflow-hidden';
+                imgContainer.appendChild(img);
+                
+                const textContainer = document.createElement('div');
+                textContainer.className = 'p-5';
+                textContainer.innerHTML = `<h3 class="text-lg sm:text-xl font-semibold text-gray-800">${location.name}</h3>`;
+                
+                card.appendChild(imgContainer);
+                card.appendChild(textContainer);
+                
                 card.addEventListener('click', () => {
                     const selectedLocation = locationsData.find(loc => loc.id === parseInt(card.dataset.id));
                     if (selectedLocation) showLocationDetails(selectedLocation);
@@ -360,7 +409,7 @@
 
         function closeLightbox() {
             lightbox.classList.add('hidden');
-            lightboxContentWrapper.innerHTML = ''; // Clear content to stop videos
+            lightboxContentWrapper.innerHTML = '';
             document.body.style.overflow = '';
         }
 
@@ -376,7 +425,7 @@
 
         function displayLightboxItem() {
             const item = galleryItemsForLightbox[currentLightboxIndex];
-            lightboxContentWrapper.innerHTML = ''; // Clear previous
+            lightboxContentWrapper.innerHTML = '';
             
             if (item.type === 'image') {
                 const img = document.createElement('img');
@@ -384,7 +433,7 @@
                 img.className = 'max-w-[90vw] max-h-[90vh] object-contain';
                 lightboxContentWrapper.appendChild(img);
                 setupZoomAndPan(lightboxContentWrapper);
-            } else { // video
+            } else { 
                 const video = document.createElement('video');
                 video.src = item.src;
                 video.className = 'max-w-[90vw] max-h-[90vh]';
@@ -399,7 +448,7 @@
                 start = { x: 0, y: 0 },
                 translate = { x: 0, y: 0 };
                 
-            wrapper.style.transform = ''; // Reset transform
+            wrapper.style.transform = '';
 
             function applyTransform() {
                 wrapper.style.transform = `translate(${translate.x}px, ${translate.y}px) scale(${scale})`;
