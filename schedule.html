@@ -147,21 +147,14 @@
                 </div>
                  <!-- Step 3: Group Details -->
                 <div id="step-3" class="step">
-                    <h2 class="text-2xl font-semibold mb-6 text-center">Bước 3: Về nhóm của bạn</h2>
-                    <div class="space-y-6">
-                        <div>
-                            <label for="num-people" class="font-medium text-gray-700">Có bao nhiêu người đi?</label>
-                            <input type="number" id="num-people" value="1" min="1" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                        </div>
-                        <div>
-                             <p class="font-medium text-gray-700 mb-2">Đặc điểm nhóm của bạn là gì?</p>
-                             <div class="grid grid-cols-2 gap-4 custom-choice">
-                                <div><input type="radio" id="audience-friends" name="audience" value="Nhóm bạn trẻ" checked><label for="audience-friends">Bạn bè</label></div>
-                                <div><input type="radio" id="audience-family" name="audience" value="Gia đình có trẻ em"><label for="audience-family">Gia đình</label></div>
-                                <div><input type="radio" id="audience-elderly" name="audience" value="Nhóm có người lớn tuổi"><label for="audience-elderly">Có người lớn tuổi</label></div>
-                                <div><input type="radio" id="audience-solo" name="audience" value="Đi một mình"><label for="audience-solo">Một mình</label></div>
-                             </div>
-                        </div>
+                    <h2 class="text-2xl font-semibold mb-6 text-center">Bước 3: Đặc điểm nhóm của bạn là gì?</h2>
+                    <div class="custom-choice">
+                         <div class="grid grid-cols-2 gap-4">
+                            <div><input type="radio" id="audience-friends" name="audience" value="Nhóm bạn trẻ" checked><label for="audience-friends">Bạn bè</label></div>
+                            <div><input type="radio" id="audience-family" name="audience" value="Gia đình có trẻ em"><label for="audience-family">Gia đình</label></div>
+                            <div><input type="radio" id="audience-elderly" name="audience" value="Nhóm có người lớn tuổi"><label for="audience-elderly">Có người lớn tuổi</label></div>
+                            <div><input type="radio" id="audience-solo" name="audience" value="Đi một mình"><label for="audience-solo">Một mình</label></div>
+                         </div>
                     </div>
                      <div class="mt-8 flex justify-between">
                         <button onclick="prevStep(2)" class="rounded-xl transition duration-300 hover:bg-gray-300 bg-gray-200 text-gray-700 font-semibold py-3 px-8">Quay lại</button>
@@ -184,7 +177,7 @@
 
                 <!-- Step 5: Result -->
                 <div id="step-5" class="step">
-                    <h2 class="text-2xl font-semibold mb-6 text-center">Lịch trình gợi ý từ A.I</h2>
+                    <h2 class="text-2xl font-semibold mb-6 text-center">Lịch trình gợi ý</h2>
                     <div id="loading" class="flex justify-center items-center my-8 hidden">
                        <div class="loader"></div>
                     </div>
@@ -243,7 +236,6 @@
         document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
         document.getElementById('start-time').value = '7';
         document.getElementById('end-time').value = '17';
-        document.getElementById('num-people').value = '1';
         document.getElementById('audience-friends').checked = true;
         
         document.getElementById('itinerary-result').innerHTML = '';
@@ -283,9 +275,7 @@
             let locationName = null;
             let locationAddress = null;
 
-            // Regex to capture "Activity at [[Name - Address]]"
             const fullLocationMatch = restOfString.match(/(.*?)\s+tại\s+\[\[(.*?)\s*-\s*(.*?)\]\]\.?$/);
-            // Regex for fallback "Activity at [[Name]]"
             const simpleLocationMatch = restOfString.match(/(.*?)\s+tại\s+\[\[(.*?)\]\]\.?$/);
 
             if (fullLocationMatch) {
@@ -301,6 +291,11 @@
                 }
             }
             if (!activity) return;
+
+            // Apply formatting for italics and underline
+            activity = activity
+                .replace(/\*(.*?)\*/g, '<i>$1</i>')
+                .replace(/\_(.*?)\_/g, '<u>$1</u>');
 
             const iconName = getIconForActivity(activity);
             const item = document.createElement('div');
@@ -365,7 +360,6 @@
         const selectedTemples = Array.from(document.querySelectorAll('.temple-checkbox:checked')).map(cb => cb.value);
         const startTime = document.getElementById('start-time').value + ':00';
         const endTime = document.getElementById('end-time').value + ':00';
-        const numPeople = document.getElementById('num-people').value;
         const audience = document.querySelector('input[name="audience"]:checked').value;
         const includeFood = document.getElementById('pref-food').checked;
         const includeDrink = document.getElementById('pref-drink').checked;
@@ -376,39 +370,84 @@
         prompt += `DỮ LIỆU BẮT BUỘC SỬ DỤNG:\n`;
         prompt += `- Điểm xuất phát MẶC ĐỊNH: Trung tâm thị trấn Sa Rài, Tân Hồng, Đồng Tháp.\n`;
         prompt += `- Dữ liệu địa chỉ chùa CHÍNH XÁC (sử dụng đúng địa chỉ này):\n`;
-        prompt += `  - Chùa Đôn Hậu: Ấp Gò Bói, xã Thông Bình, huyện Tân Hồng, Đồng Tháp\n`;
-        prompt += `  - Chùa Đông An: Ấp Gò Bói, xã Thông Bình, huyện Tân Hồng, Đồng Tháp\n`;
-        prompt += `  - Chùa Phước Thiện: QL30, ấp 3, xã Tân Thành A, huyện Tân Hồng, Đồng Tháp\n`;
-        prompt += `  - Chùa Hiếu Đức: Thống Nhất, xã Tân Phước, huyện Tân Hồng, Đồng Tháp\n\n`;
+        prompt += `  - Chùa Đôn Hậu: Bình Phú, Tân Hồng, Đồng Tháp\n`;
+        prompt += `  - Chùa Phước Thiện: Công Tạo, Bình Phú, Tân Hồng, Đồng Tháp\n`;
+        prompt += `  - Chùa Đông An: Tân Hộ Cơ, Tân Hồng, Đồng Tháp\n`;
+        prompt += `  - Chùa Hiếu Đức: Tân Hộ Cơ, Tân Hồng, Đồng Tháp\n`;
+        prompt += `- DANH SÁCH QUÁN ĂN/CÀ PHÊ (ƯU TIÊN CHỌN TỪ ĐÂY):\n`;
+        prompt += `  - Cơm tâm đêm Bảo Xuyên: Nguyễn Huệ, TT. Sa Rài, H. Tân Hồng, Đồng Tháp\n`;
+        prompt += `  - Phở Tám Hơn: TT. Sa Rài, Tân Hồng, Đồng Tháp\n`;
+        prompt += `  - Mì Quảng Giáo Lượng: Nguyễn Huệ, TT. Sa Rài\n`;
+        prompt += `  - Bún riêu Cua Đồng: Đường Tỉnh 843, TT. Sa Rài\n`;
+        prompt += `  - Hủ tiếu Nam Vang Huỳnh Ký: QL30, TT. Sa Rài\n`;
+        prompt += `  - Bún bò Huế O Cúc: Đường Tỉnh 843, TT. Sa Rài\n`;
+        prompt += `  - Quán ăn gia đình Tư Lùn 2: QL30, An Phước, Tân Hồng\n`;
+        prompt += `  - Bánh xèo miền Tây: Đường Tỉnh 843, TT. Sa Rài\n`;
+        prompt += `  - Cháo lòng Ông Mập: Chợ Sa Rài, TT. Sa Rài\n`;
+        prompt += `  - Quán cơm chay Thiện Duyên: Nguyễn Huệ, TT. Sa Rài\n`;
+        prompt += `  - Quán cháo cá lóc rau đắng: Đường Tỉnh 843, TT. Sa Rài\n`;
+        prompt += `  - Lẩu mắm miền Tây: QL30, Tân Phước, Tân Hồng\n`;
+        prompt += `  - Bò né 3 Ngon: Nguyễn Huệ, TT. Sa Rài\n`;
+        prompt += `  - Gà nướng lu Bảy Đực: QL30, An Phước, Tân Hồng\n`;
+        prompt += `  - Vịt quay A Lý: Chợ Sa Rài, TT. Sa Rài\n`;
+        prompt += `  - Bún cá Châu Đốc: Đường Tỉnh 843, TT. Sa Rài\n`;
+        prompt += `  - Nem nướng Nha Trang: Nguyễn Huệ, TT. Sa Rài\n`;
+        prompt += `  - Quán ốc đêm: Chợ Sa Rài, TT. Sa Rài\n`;
+        prompt += `  - Bánh canh ghẹ: QL30, TT. Sa Rài\n`;
+        prompt += `  - Cơm tấm Sườn Bì Chả: Nguyễn Huệ, TT. Sa Rài\n`;
+        prompt += `  - Lẩu Thái Tom Yum: Đường Tỉnh 843, TT. Sa Rài\n`;
+        prompt += `  - Quán dê núi 79: QL30, An Phước, Tân Hồng\n`;
+        prompt += `  - Bánh mì chảo: Nguyễn Huệ, TT. Sa Rài\n`;
+        prompt += `  - Bò tơ Củ Chi: QL30, Tân Phước, Tân Hồng\n`;
+        prompt += `  - Cơm gà xối mỡ: Đường Tỉnh 843, TT. Sa Rài\n`;
+        prompt += `  - Apaoma Coffee: Nguyễn Huệ, TT. Sa Rài, H. Tân Hồng\n`;
+        prompt += `  - Hoa Sứ Cafe: QL30, TT. Sa Rài\n`;
+        prompt += `  - The Coffee House Tân Hồng: Nguyễn Huệ, TT. Sa Rài\n`;
+        prompt += `  - Milano Coffee: Đường Tỉnh 843, TT. Sa Rài\n`;
+        prompt += `  - Cafe Bờ Kè: Bờ kè sông Sa Rài, TT. Sa Rài\n`;
+        prompt += `  - Cafe Sân Vườn Út Tịch: QL30, An Phước, Tân Hồng\n`;
+        prompt += `  - Trà sữa BoBaPoP: Nguyễn Huệ, TT. Sa Rài\n`;
+        prompt += `  - Cafe Phố: Đường Tỉnh 843, TT. Sa Rài\n`;
+        prompt += `  - Cafe 1985: Nguyễn Huệ, TT. Sa Rài\n`;
+        prompt += `  - Cafe Acoustic Garden: QL30, Tân Phước, Tân Hồng\n`;
+        prompt += `  - Trà chanh Bụi Phố: Bờ kè sông Sa Rài, TT. Sa Rài\n`;
+        prompt += `  - Cafe Sala: Nguyễn Huệ, TT. Sa Rài\n`;
+        prompt += `  - Quán Cà Phê Suối Nguồn: DH. Tân Thành, Thông Bình, Tân Hồng\n`;
+        prompt += `  - Cafe Điểm Hẹn: Xã An Phước, Tân Hồng\n`;
+        prompt += `  - Quán Nước Mía Vườn Cau: QL30, TT. Sa Rài\n`;
+        prompt += `  - Quán Café Hữu Tâm: DH. Tân Thành, Thông Bình, Tân Hồng\n`;
+        prompt += `  - Trà Sữa Boon Tea: Xã Tân Hộ Cơ, Tân Hồng\n`;
+        prompt += `  - Quán cà phê Tân Kỷ: Xã An Phước, Tân Hồng\n`;
+        prompt += `  - Quán cà phê Bòn Bon: Xã Tân Hộ Cơ, Tân Hồng\n\n`;
 
         prompt += `YÊU CẦU TỪ NGƯỜI DÙNG:\n`;
         prompt += `- Các chùa muốn đi: ${selectedTemples.join(', ')}.\n`;
         prompt += `- Khung thời gian: từ ${startTime} đến ${endTime}. LƯU Ý: ${startTime} là thời gian KHỞI HÀNH từ Sa Rài.\n`;
-        prompt += `- Số lượng người: ${numPeople}.\n`;
         prompt += `- Đặc điểm nhóm: ${audience}.\n`;
 
         if (audience === 'Nhóm có người lớn tuổi') {
             prompt += `- LƯU Ý ĐẶC BIỆT: Vì nhóm có người lớn tuổi, hãy tạo một lịch trình thật thong thả, tránh các hoạt động dày đặc, và có nhiều thời gian nghỉ ngơi hơn giữa các điểm đến.\n`;
         }
         
-        if (includeFood) prompt += `- Yêu cầu thêm: Có ăn uống. Gợi ý một quán ăn cụ thể tại huyện Tân Hồng KÈM THEO ĐỊA CHỈ. Quán ăn này nên nằm trên lộ trình di chuyển tối ưu.\n`;
-        if (includeDrink) prompt += `- Yêu cầu thêm: Có ghé quán nước/cafe. Gợi ý một quán cụ thể tại huyện Tân Hồng KÈM THEO ĐỊA CHỈ. Quán này nên nằm trên lộ trình di chuyển tối ưu.\n`;
+        if (includeFood) prompt += `- Yêu cầu thêm: Có ăn uống. Gợi ý một quán ăn cụ thể KÈM THEO ĐỊA CHỈ từ DANH SÁCH QUÁN ĂN/CÀ PHÊ đã cho. QUAN TRỌNG: Quán ăn phải gần nhất có thể với ngôi chùa vừa đi qua hoặc sắp tới.\n`;
+        if (includeDrink) prompt += `- Yêu cầu thêm: Có ghé quán nước/cafe. Gợi ý một quán cụ thể KÈM THEO ĐỊA CHỈ từ DANH SÁCH QUÁN ĂN/CÀ PHÊ đã cho. QUAN TRỌNG: Quán cafe phải gần nhất có thể với ngôi chùa vừa đi qua hoặc sắp tới.\n`;
         if (includeStay) prompt += `- Yêu cầu thêm: Có nghỉ lại qua đêm. Gợi ý một nhà nghỉ/khách sạn cụ thể tại huyện Tân Hồng KÈM THEO ĐỊA CHỈ (chỉ thêm nếu khung thời gian hợp lý).\n`;
         
-        prompt += `\nNHIỆM VỤ CỐT LÕI: Dựa vào các chùa người dùng đã chọn, hãy sắp xếp thứ tự các điểm đến để tạo ra một LỘ TRÌNH DI CHUYỂN TỐI ƯU NHẤT, tiết kiệm thời gian nhất, bắt đầu từ Trung tâm TT. Sa Rài.\n`;
+        prompt += `\nNHIỆM VỤ CỐT LÕI: Dựa vào các chùa người dùng đã chọn và vị trí của chúng, hãy sắp xếp thứ tự các điểm đến để tạo ra một LỘ TRÌNH DI CHUYỂN TỐI ƯU NHẤT, tiết kiệm thời gian nhất, bắt đầu từ Trung tâm TT. Sa Rài.\n`;
 
         prompt += `\nQUY TẮC ĐỊNH DẠNG (CỰC KỲ QUAN TRỌNG):\n`;
+        prompt += `- Hỗ trợ định dạng: *văn bản in nghiêng* và _văn bản gạch chân_.\n`;
         prompt += `- Định dạng mỗi mục trên một dòng: **Giờ** Emoji - Mô tả hoạt động tại [[Tên địa điểm - Địa chỉ]].\n`;
         prompt += `- Ví dụ MẪU:\n`;
-        prompt += `  **07:00** 🚗 - Khởi hành.\n`;
-        prompt += `  **08:00** 🙏 - Viếng chùa tại [[Chùa Phước Thiện - QL30, ấp 3, xã Tân Thành A, huyện Tân Hồng, Đồng Tháp]].\n`;
-        prompt += `  **12:00** 🍚 - Dùng bữa trưa tại [[Quán Cơm A - 123 đường Nguyễn Huệ, TT. Sa Rài, Tân Hồng, Đồng Tháp]].\n`;
+        prompt += `  **07:00** 🚗 - Khởi hành từ _Trung tâm Sa Rài_.\n`;
+        prompt += `  **08:00** 🙏 - Viếng chùa tại [[Chùa Phước Thiện - Công Tạo, Bình Phú, Tân Hồng, Đồng Tháp]].\n`;
+        prompt += `  **12:00** 🍚 - Dùng bữa trưa. *Gợi ý: thử món đặc sản địa phương* tại [[Quán Cơm A - 123 đường Nguyễn Huệ, TT. Sa Rài, Tân Hồng, Đồng Tháp]].\n`;
         prompt += `  **17:00** ✅ - Kết thúc chuyến đi.\n`;
         prompt += `- Với các chùa, PHẢI dùng đúng tên và địa chỉ trong phần DỮ LIỆU BẮT BUỘC SỬ DỤNG.\n`;
         prompt += `- Nếu hoạt động không có địa điểm cụ thể (ví dụ: 'Khởi hành' hoặc 'Kết thúc chuyến đi'), thì không cần thêm phần 'tại [[...]]'.`;
 
 
-        const apiKey = "AIzaSyAPinf6FjtKqn4WNfJ892W3kuiq4yIBgAQ";
+        const apiKey = "";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
         const payload = { contents: [{ parts: [{ text: prompt }] }] };
